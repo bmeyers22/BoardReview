@@ -1466,42 +1466,42 @@ function getRating2(page, exam) {
   });
 
 
-  var api = new mw.Api();
-  api.get({
-    action: 'ratings',
-    id: question: page,
-    format: 'json'
-  }, {
-    ok: function(res) {
-      $("#star1").raty({
-        path: 'http://www.wikidoc.org/includes/raty/img/',
-        click: function(score, event) {
-          submitRating("difficulty", score, exam.examQuestions[exam.currentQuestion].PageName)
-        },
-        score: res.wbrgetrating.difficulty,
-        hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
-      });
-      $("#star1").append("(Avg: " + res.wbrgetrating.difficulty + ", n=" + res.wbrgetrating.diffCount + ")");
-      $("#star2").raty({
-        path: 'http://www.wikidoc.org/includes/raty/img/',
-        click: function(score, event) {
-          submitRating("yield", score, exam.examQuestions[exam.currentQuestion].PageName)
-        },
-        score: res.wbrgetrating.yield,
-        hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
-      });
-      $("#star2").append("(Avg: " + res.wbrgetrating.yield + ", n=" + res.wbrgetrating.qualCount + ")");
-      $("#star3").raty({
-        path: 'http://www.wikidoc.org/includes/raty/img/',
-        click: function(score, event) {
-          submitRating("quality", score, exam.examQuestions[exam.currentQuestion].PageName)
-        },
-        score: res.wbrgetrating.quality,
-        hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
-      });
-      $("#star3").append("(Avg: " + res.wbrgetrating.quality + ", n=" + res.wbrgetrating.yieldSum + ")");
-    }
-  });
+  // var api = new mw.Api();
+  // api.get({
+  //   action: 'ratings',
+  //   id: question: page,
+  //   format: 'json'
+  // }, {
+  //   ok: function(res) {
+  //     $("#star1").raty({
+  //       path: 'http://www.wikidoc.org/includes/raty/img/',
+  //       click: function(score, event) {
+  //         submitRating("difficulty", score, exam.examQuestions[exam.currentQuestion].PageName)
+  //       },
+  //       score: res.wbrgetrating.difficulty,
+  //       hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
+  //     });
+  //     $("#star1").append("(Avg: " + res.wbrgetrating.difficulty + ", n=" + res.wbrgetrating.diffCount + ")");
+  //     $("#star2").raty({
+  //       path: 'http://www.wikidoc.org/includes/raty/img/',
+  //       click: function(score, event) {
+  //         submitRating("yield", score, exam.examQuestions[exam.currentQuestion].PageName)
+  //       },
+  //       score: res.wbrgetrating.yield,
+  //       hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
+  //     });
+  //     $("#star2").append("(Avg: " + res.wbrgetrating.yield + ", n=" + res.wbrgetrating.qualCount + ")");
+  //     $("#star3").raty({
+  //       path: 'http://www.wikidoc.org/includes/raty/img/',
+  //       click: function(score, event) {
+  //         submitRating("quality", score, exam.examQuestions[exam.currentQuestion].PageName)
+  //       },
+  //       score: res.wbrgetrating.quality,
+  //       hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
+  //     });
+  //     $("#star3").append("(Avg: " + res.wbrgetrating.quality + ", n=" + res.wbrgetrating.yieldSum + ")");
+  //   }
+  // });
 }
 
 
