@@ -51,6 +51,16 @@ label.css-label {
     color:#3C9AD6;
     font-weight: 300;
 }
+
+#filterOptionBarTitle{
+    text-align:right;
+    margin-top:-30px;
+    font-size: 30px;
+    font-family: Open Sans;
+    color:#3C9AD6;
+    font-weight: 300;
+}
+
 #selectMenuPrompt{
     font-family: 'Lato', Calibri, Arial, sans-serif;
     color:#aaa;
@@ -284,6 +294,23 @@ lines comment*/
     font-weight: 300;
 }
 
+#filterOptionBar{
+    width: 100%;
+    margin: auto;
+    margin-top: 60px;
+    text-align: center;
+    border-style:solid;
+    border-width: 2px;
+    border-color:#3C9AD6;
+    padding-bottom: 15px;
+    font-family: Open Sans, sans-serif;
+    font-weight: 300;
+}
+.sliderDiv{
+    width:25%;
+    display:inline-block;
+    margin-right: 50px;
+}
 
 #spacer{
 margin:20px

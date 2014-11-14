@@ -1,1 +1,0 @@
-window.BR = window.BR || {};
