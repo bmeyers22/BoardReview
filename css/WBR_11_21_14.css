@@ -1,0 +1,663 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400);
+input[type=radio].css-checkbox {
+    display:none;
+}
+input[type=radio].css-checkbox + label.css-label {
+    display: inline-block;
+    *display: inline;
+    vertical-align: middle;
+    margin: 0;
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background: url(http://dl.dropboxusercontent.com/u/1874620/iCheck/flat/blue.png) no-repeat;
+    border: none;
+    cursor: pointer;
+    background-position: -88px 0;
+}
+input[type=radio].css-checkbox:checked + label.css-label {
+    background-position: -110px 0;
+}
+label.css-label {
+    background-image:url(http://dl.dropboxusercontent.com/u/1874620/iCheck/flat/blue.png);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.examOptionButton {
+    font:18px Open Sans,'MontserratRegular', Helvetica, Arial, sans-serif;
+    color: #444;
+    font-weight: 300;
+}
+.examOptionTitle {
+    font:24px Open Sans, 'MontserratRegular', Helvetica, Arial, sans-serif;
+    color:#222;
+    font-weight:300;
+}
+
+#examOptions{
+    width:850px;
+    margin:auto;
+}
+
+#topOptionBarTitle{
+    text-align:right;
+    margin-top:-30px;
+    font-size: 30px;
+    font-family: Open Sans;
+    color:#3C9AD6;
+    font-weight: 300;
+}
+
+#filterOptionBarTitle{
+    text-align:right;
+    margin-top:-30px;
+    font-size: 30px;
+    font-family: Open Sans;
+    color:#3C9AD6;
+    font-weight: 300;
+}
+
+#selectMenuPrompt{
+    font-family: 'Lato', Calibri, Arial, sans-serif;
+    color:#aaa;
+}
+
+@media (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+    input[type=radio].css-checkbox + label.css-label {
+        background-image: url(http://dl.dropboxusercontent.com/u/1874620/iCheck/flat/blue@2x.png);
+        -webkit-background-size: 176px 22px;
+        background-size: 176px 22px;
+    }
+}
+
+a{
+target-name:new;
+target-new:tab;
+}
+body{
+width:100%;
+margin:0;
+background-color:#FFFFFF;
+}
+
+#CategorySelectionTable td{
+    padding-left: 12.5%;
+}
+#CategorySelectorDiv{
+    margin-top: 60px;
+    padding-top: 20px;
+    margin-bottom: 50px;
+    font-family: Open Sans, Sans-Serif;
+    font-weight: 300;
+    font-size:1.2em;
+}
+
+#CategorySelectorDiv td{
+    font-family: Open Sans, Sans-Serif;
+    font-weight: 300;
+    font-size: 1em;
+}
+#CategorySelectorDiv td{
+    padding-left: 12.5%;
+}
+
+#details{
+  position:absolute; background:white; border: 1px solid #D1C9C2; border-top: 0; width: 400px; margin: 0 auto; padding:  7px 15px; text-align: left; -webkit-border-bottom-right-radius: 6px; -webkit-border-bottom-left-radius: 6px; -moz-border-radius-bottomright: 6px; -moz-border-radius-bottomleft: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px;
+}
+#CountQ{
+    margin-left: 30%;
+}
+#content.mw-body{
+width:100%;
+padding:0;
+margin-left:0;
+margin:0;
+border:none;
+}
+#bodyContent{
+width:100%;
+height:100%;
+margin:0;
+}
+
+
+
+#chooseQBank{
+background-color:#0e83cd;
+
+}
+body{
+width:100%;
+margin:0;
+}
+
+/*Here's some css for the buttons used to select an exam. (.Curric buttons).
+lines comment*/
+/*#testOptions .round-button {
+    width:120px;
+    display:inline-block;
+    cursor:pointer;
+    margin-top:18px;
+    
+}*/
+
+/*.round-button {
+    width:120px;
+    display:inline-block;
+    cursor:pointer;
+}
+.round-button-circle {
+    width: 100%;
+    height:0;
+    padding-bottom: 100%;
+    border-radius: 50%;
+    border:0px solid #3C9AD6;
+    overflow:hidden;
+    opacity:50%;
+    
+    background: #3C9AD6; 
+}*/
+
+/*#chooseQBank .round-button p {
+    font-family: Open Sans, sans-serif;
+    font-weight: 100;
+    float:left;
+    width:100%;
+    padding-top:50%;
+    padding-bottom:50%;
+    line-height:1em;
+    margin-top:-0.5em;
+    
+    text-align:center;
+    color:white;
+    font-size:3.2em;
+    text-decoration:none;
+}*/
+
+#chooseQBank .round-button {
+    width:100px;
+    display:inline-block;
+    cursor:pointer;
+}
+#chooseQBank .round-button-circle {
+    width: 100%;
+    height:0;
+    padding-bottom: 100%;
+    border-radius: 50%;
+    border:0px solid #3C9AD6;
+    overflow:hidden;
+    opacity:50%;
+    
+    background: #3C9AD6; 
+}
+
+#chooseQBank .round-button p {
+    font-family: Open Sans, 'Lato', Calibri, Arial, sans-serif;
+
+    display:block;
+    float:left;
+    width:100%;
+    padding-top:50%;
+    padding-bottom:50%;
+    line-height:1em;
+    margin-top:-0.5em;
+    
+    text-align:center;
+    color:white;
+    font-size:3.2em;
+    font-weight: 100;
+    text-decoration:none;
+}
+#chooseQBank .round-button p:hover {
+    color:#0e83cd;
+    transition: background 0.3s, color 0.3s;
+}
+#chooseQBank .round-button-circle:hover {
+    width: 100%;
+    height:0;
+    padding-bottom: 100%;
+    border-radius: 50%;
+    border-spacing:5px;
+    border:0px solid #0e83cd;
+    overflow:hidden;
+    box-shadow: 0 0 0 4px #fff;
+    transition: background 0.5s, color 0.5s;
+    background: white; 
+}
+
+#testOptions .round-button p {
+    font-family: Open Sans, 'Lato', Calibri, Arial, sans-serif;
+
+    display:block;
+    float:left;
+    width:100%;
+    padding-top:37%;
+    padding-bottom:50%;
+    line-height:1em;
+    margin-top:-0.5em;
+    
+    text-align:center;
+    color:white;
+    font-size:2.2em;
+    font-weight: 100;
+    text-decoration:none;
+}
+
+#testOptions .round-button {
+    width:120px;
+    display:inline-block;
+    cursor:pointer;
+}
+#testOptions .round-button-circle {
+    width: 100%;
+    height:0;
+    padding-bottom: 100%;
+    border-radius: 50%;
+    border:3px solid #3C9AD6;
+    overflow:hidden;
+    opacity:50%;
+    
+    background: #3C9AD6; 
+}
+
+#testOptions .round-button p:hover {
+    color:#0e83cd;
+    transition: background 0.3s, color 0.3s;
+}
+#testOptions .round-button-circle:hover {
+    width: 100%;
+    height:0;
+    padding-bottom: 100%;
+    border-radius: 50%;
+    border-spacing:5px;
+    border:3px solid #fff;
+    overflow:hidden;
+    box-shadow: 0 0 0 4px #fff;
+    transition: background 0.3s, color 0.3s;
+    background: white; 
+}
+
+#topOptionBar{
+    width: 100%;
+    margin: auto;
+    margin-top: 60px;
+    text-align: center;
+    border-style:solid;
+    border-width: 2px;
+    border-color:#3C9AD6;
+    padding-bottom: 15px;
+    font-family: Open Sans, sans-serif;
+    font-weight: 300;
+}
+
+#filterOptionBar{
+    width: 100%;
+    margin: auto;
+    margin-top: 60px;
+    text-align: center;
+    border-style:solid;
+    border-width: 2px;
+    border-color:#3C9AD6;
+    padding-bottom: 15px;
+    font-family: Open Sans, sans-serif;
+    font-weight: 300;
+}
+.sliderDiv{
+    width:25%;
+    display:inline-block;
+    margin-right: 50px;
+}
+
+#spacer{
+margin:20px
+}
+
+.container > header {
+    font-family: Open Sans, 'Lato', Calibri, Arial, sans-serif;
+margin: 0 auto;
+padding: 2em 1em 2em;
+width: 100%;
+text-align: center;
+background: #fff;
+z-index: 999999;
+-webkit-backface-visibility: hidden;
+border-bottom:none;
+margin-bottom:20px;
+}
+
+#educational_objective{
+    border: 1px solid #0099CC;
+    color:#0099CC;
+    padding:5px;
+    width:90%;
+}
+
+#explanationSpace h1{
+    color: #0099CC;
+    border: none;
+    font-size: 1.2em;
+}
+
+.container > header h1 {
+
+font-size: 3.625em;
+line-height: 1.3;
+margin: 0;
+font-weight: 300;
+color: #aaa;
+background: #fff;
+border-bottom:none;
+}
+.container > header span {
+
+display: block;
+font-size: 60%;
+opacity: 0.6;
+padding: 0 0 0.6em 0.1em;
+border-bottom:none;
+}
+
+.examButtons { 
+
+text-align: center;
+
+margin: 0 auto;
+
+    padding: 2em 0 3em; }
+
+.boxed{
+border:0px solid black !important;
+}
+.redBoxed{
+border:0px solid #F00 !important;
+}   
+.answer{display: inline}
+.ans_text{
+display: inline;
+cursor: pointer;
+}
+
+.answerExp{
+    margin-left:3%;
+}
+.choice_elim{
+opacity:0.9;
+text-decoration:line-through;
+}
+.flagged{
+color:#FF0000;
+}
+.labvalson{
+display:visible;
+}
+
+
+.unboxed{
+border:0px;
+}
+#go{
+width:150px;
+height:50px;
+background-color:#0f0;
+}
+
+.imageDiv{
+margin:5px 5px 5px 5px;
+}
+
+.WBRButton{
+font-family:Arial;
+float:left;
+background-color:#3C9AD6;
+height:40px;
+line-height: 15px;
+border-radius: 15px;
+font-weight:bold;
+width:150px;
+display: table-cell;
+cursor: pointer;
+color:#FFFFFF;
+text-align: center;
+vertical-align: middle;
+margin-right:10px;
+}
+#testOptions .WBRButton{
+font-family:Open Sans, sans-serif;
+font-weight: 300;
+float:left;
+background-color:#3C9AD6;
+height:40px;
+line-height: 20px;
+border-radius: 30px;
+width:150px;
+display: table-cell;
+cursor: pointer;
+color:#FFFFFF;
+text-align: center;
+vertical-align: middle;
+margin-right:10px;
+font-size: 0.83em;
+}
+
+.WBRImgButton{
+font-family:Arial;
+float:left;
+height:40px;
+font-weight:bold;
+width:100px;
+display: table-cell;
+cursor: pointer;
+color:#FFFFFF;
+text-align: center;
+vertical-align: middle;
+margin-right:10px;
+}
+
+.WBRImgButton img{
+width:auto; 
+height:35px;
+}
+
+#globalWrapper{
+z-index:-1;
+}
+#content{
+height:100%;}
+#exam{
+height:90%;
+border:none;
+padding:0;
+}
+
+#mw-content-text{
+height:100%;}
+
+#navPane{
+position:relative; 
+float:left;
+width:5%;
+height:calc( 100% - 40px);
+overflow-y:scroll; 
+}
+#examSpace{
+position:relative;
+float:right;
+width:94%;
+height:Calc(95% - 80px);
+overflow-y:scroll; 
+font-family: 'Open Sans';
+font-weight: 300;
+font-size: medium;
+}
+#navBar{
+position:relative;
+float:right;
+width:95%;
+background-color:#3366CC;
+}
+#bottomBar {
+height: 40px;
+position: inherit;
+float: right;
+width: 100%;
+background-color: #3366CC;
+}
+#pauseButton{
+float:right;
+margin-bottom:0px;
+height:95%;
+}
+#stopButton{
+float:right;
+margin-right: 5%;
+height=95%;
+margin-bottom:0px;
+}
+.navPaneButton {
+height: 20px;
+background-color: #D0D0D0;
+padding-top: 5px;
+font-weight: bold;
+text-align: right;
+padding-right: Calc(50% - 0.5em);
+cursor: pointer;
+}
+div.answerNoBorder{
+border:0px solid #FFF;
+}
+div.answerBorder{
+border:0px solid #000;
+}
+div.explanationHide{
+height:0px;
+visibility:hidden;
+}
+div.explanationShow{
+height:auto;
+visibility:visible;
+}
+#tutorOrExamContainer{
+    background-color:#E3E5E5;
+}
+.examButtonNotSelected {
+    opacity:0.4;
+}
+
+
+.arrow-up {
+width: 0px;
+height: 0;
+border-left: 15px solid transparent;
+border-right: 15px solid transparent;
+border-bottom: 20px solid white;
+}
+
+#wjgContainer { font-family:Arial, Helvetica, Sans-Serif; font-size:0.8em; height:80%;}
+
+#report { border-collapse:collapse;width:90%}
+#report h4 { margin:0px; padding:0px;}
+#report img { float:right;}
+#report ul { margin:10px 0 10px 40px; padding:0px;}
+#report th { background:#7CB8E2 url(http://www.jankoatwarpspeed.com/wp-content/uploads/examples/expandable-rows/header_bkg.png) repeat-x scroll center left; color:#fff; padding:7px 15px; text-align:left;}
+#report td { background:#C7DDEE none repeat-x scroll center left; color:#000; padding:7px 15px; }
+#report tr.odd td { background:#fff url(http://www.jankoatwarpspeed.com/wp-content/uploads/examples/expandable-rows/row_bkg.png) repeat-x scroll center left; cursor:pointer; }
+#report div.arrow { background:transparent url(http://www.jankoatwarpspeed.com/wp-content/uploads/examples/expandable-rows/arrows.png) no-repeat scroll 0px -16px; width:16px; height:16px; display:block;}
+#report div.up { background-position:0px 0px;}
+
+#tableContainer { 
+    overflow-y: scroll; 
+ height: 100%;}
+
+#metrics{
+width:80%;
+text-align: center;
+}
+#tableContainer .cell{
+width:20%;
+text-align: center;
+display: inline-block;
+}
+#tableContainer span{
+width:100%;
+}
+
+#KeywordSelectorDiv{
+    width: 100%;
+    margin: auto;
+    margin-top: 60px;
+    text-align: center;
+    border-style:solid;
+    border-width: 2px;
+    border-color:#3C9AD6;
+    padding-bottom: 15px;
+    font-family: Open Sans, sans-serif;
+    font-weight: 300;
+}
+
+#keywordTitle{
+    text-align:right;
+    margin-top:-30px;
+    font-size: 30px;
+    font-family: Open Sans;
+    color:#3C9AD6;
+    font-weight: 300;
+}
+
+#formSpace{
+    margin-top: 40px;
+}
+
+#KeywordSelectorDiv .WBRButton{
+font-family:Open Sans, sans-serif;
+font-weight: 300;
+float:left;
+background-color:#3C9AD6;
+height:40px;
+line-height: 40px;
+border-radius: 30px;
+width:100px;
+display: table-cell;
+cursor: pointer;
+color:#FFFFFF;
+text-align: center;
+vertical-align: middle;
+margin-right:10px;
+
+}
+#questionCountResults{
+    font-family:Open Sans, sans-serif;
+    font-weight: 300;
+    margin-left: 10%;
+    margin-bottom: 60px;
+}
+#highlightable{
+    text-align: justify;
+    width:70%;
+}
+#loginTitle{
+    font-family:Open Sans, sans-serif;
+    font-weight: 300;
+    color:#FFFFFF;
+    text-align: center;
+    cursor: pointer;
+}
+#loginPane{
+    text-align: center;
+    display: none;
+}
+#loginPane div{
+    display: inline-block;
+    text-align: center;
+    cursor:pointer;
+}
+#logoutDiv{
+    font-family:Open Sans, sans-serif;
+    font-weight: 300;
+    text-align: center;
+    color:#FFFFFF;
+    cursor: pointer;
+}
