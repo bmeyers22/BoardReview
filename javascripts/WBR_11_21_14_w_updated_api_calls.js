@@ -506,7 +506,28 @@ function runPerformanceQuery() {
                 timeEnd = "Unfinished";
                 scoreString = "N/A";
             }
-            if (true) {
+            // Check whether the exam was initiated with categories or keywords
+            if (value.mainCategory.length>0){
+                //Now we know that categories were used.
+                if (value.mainCategory.length>3){
+                    mainCatString='Multiple';
+                }else{
+                    mainCatString=value.mainCategory.join();
+                }
+                if (value.subCategory.length>3){
+                    subCatString='Multiple';
+                }else{
+                    subCatString=value.subCategory.join();
+                }
+
+                var examSetUpInfo="<li>Categories selected: "+mainCatString + " </li>" +
+                    "<li>Subcategories selected: " + subCatString +"</li>";
+            }else{
+                //now we know that we are in the keywords territory
+                keywordString=value.keywords.join();
+                 var examSetUpInfo="<li>Keywords selected: "+keywordString + " </li>";
+            }
+            if (value.type==window.exam.examtype) {
                 var wjg_string = "<tr class='odd'>" +
                     "<td>" + value.id + "</td>" +
                     "<td>" + timeBegin + "</td>" +
@@ -519,8 +540,7 @@ function runPerformanceQuery() {
                     '<td colspan="6">' +
                     "<h4>Additional information</h4>" +
                     "<ul>" +
-                    "<li>Categories selected: Coming soon</li>" +
-                    "<li>Subcategories selected: Coming soon</li>" +
+                    examSetUpInfo+
                     "<li><div id= '" + value.id + "' class='resumeClass' style='cursor:pointer'>Resume exam</div></li>" +
                     "<li><div id= '" + value.id + "' class='deleteClass' style='cursor:pointer'>Delete exam</div></li>" +
                     "</ul>" +
@@ -670,6 +690,7 @@ function Keywords(event) {
                 format: 'json'
             })
             .always(function(data) {
+                console.log(data)
                 $.each(data.query.results, function(index, value) {
                     obj.questionListAll.push(value.fulltext);
                 });
@@ -707,7 +728,8 @@ function TNG(event) {
     };
     window.exam.numQuestion = $("#numQues").val();
     if (window.exam.numQuestion > 0 && window.exam.numQuestion <= 45) {
-        inputValidation();
+        if (window.exam.searchMethod === "Category"){inputValidation();}
+        if (window.exam.searchMethod === "Keyword"){inputValidationKeywords();}
         //loadNextQuestion(window.exam);
     } else {
         alert('Invalid number of questions entered.');
@@ -907,6 +929,32 @@ function suspendIfBrowserClose() {
         }) //ends the window.bind line
 }
 
+function inputValidationKeywords(event){
+     var api = new mw.Api(window.exam);
+     api.get({
+         action : 'load',
+         keywords : JSON.stringify(window.exam.questionListAll),
+         num : window.exam.numQuestion,
+         format : 'json'
+     }, {
+         ok : function (res) {
+            console.log(res);
+            window.examinfo={};
+             var i = 0;
+             window.exam.currentQuestion = 0;
+             $.each(res.questions.list, function (key, element) {
+                 element.PageName = key;
+                 window.exam.examQuestions[i] = element;
+                 //window.examinfo.questions[i]=element;
+                 //window.examinfo.id='ABCD';
+                 i++;
+             });
+             //alert('Sorry there is a bug in our keywords search right now.')
+
+             addToNavBar();
+         }
+     });
+}
 
 function inputValidation(event) {
     if (window.exam.examtype == null || window.exam.examType == '' || window.exam.examtype == null || window.exam.qbank == null || window.exam.searchMethod == null || window.exam.timeAmt == null) {
@@ -992,6 +1040,7 @@ function resumeExam(resumeExamID) {
     }).done(function(data) {
         console.log(data)
         window.examinfo = data.exam;
+        window.exam.resumeStatus=1;
         if(data.exam.tutorMode==1){
             window.exam.examType = "Tutor"
         }else{window.exam.examType= 'Exam'}
@@ -1109,6 +1158,8 @@ function loadNextQuestion() {
 function addToNavBar() {
     //This function initializes the material that frames the exam.  For instance the top toolbar and the bottom toolbar.
     $("#exam").html("<div id='navBar'><div id='flag' class='noSelect WBRImgButton'><img src='http://static.wikidoc.org/3/34/Flag_5_19_14.png' /></div><div id='back' class='noSelect WBRImgButton'><img src='http://static.wikidoc.org/f/f9/Leftarrow_3_29_b.png' /></div><div id='next' class='noSelect WBRImgButton'><img src='http://static.wikidoc.org/a/ae/Rightarrow_3_29_14_b.png' /></div><div id='lab_vals' class='noSelect WBRImgButton'><img src='http://static.wikidoc.org/8/8b/Lab_values_3_29_14.png' /></div><div id='notes' class='noSelect WBRImgButton'><img src='http://static.wikidoc.org/e/eb/Pencil_3_29_14_trimwspace.png' /></div></div><div id='navPane'></div><div id='examSpace'></div><span id='timeRem' style='height: 0px; visibility: hidden'>" + window.exam.timeAmt.toString() + "</span><div id='bottomBar'><div id='stopButton' class='noSelect WBRImgButton' style='height:40'><img src='http://static.wikidoc.org/d/d1/StopButton_9_1_14_copy.svg' style= 'height:40px'/></div><div id='pauseButton' class='noSelect WBRImgButton' style='height:100%'><img src='http://static.wikidoc.org/d/d9/Pausebutton8.svg' style= 'height:40px'/></div></div>");
+    $('#testOptions').hide();
+    $('#exam').show()
     $("#back").click(questionNavigation);
     $("#next").click(questionNavigation);
     $("#flag").click(flagQ);
@@ -1129,18 +1180,32 @@ function addToNavBar() {
             $("#navPane").append("<div id='" + index + "' class='navPaneButton'> &bull;   " + (index - -1) + "</div>");
             console.log(index)
             window.exam.examQuestions[index] = window.examinfo.questions[index].semantic;
+            window.exam.examQuestions[index].isParsed=1;
             window.exam.examQuestions[index].RightAnswer = trimP(window.exam.examQuestions[index].RightAnswer)
+            if(window.examinfo.questions[index].selected!=''){
+                window.exam.examQuestions[index].creditReceived=true;
+                window.exam.examQuestions[index].selectedAnswer=window.examinfo.questions[index].selected;
+                $("#" + index).html(" " + (index - -1));
+            }else{window.exam.examQuestions[index].creditReceived=false;}
         });
     }else{
-        $.each(window.examinfo.questions, function(index, value) {
-            window.examinfo.questions.isParsed = 0;
-            $("#navPane").append("<div id='" + index + "' class='navPaneButton'> &bull;   " + (index - -1) + "</div>");
-            console.log(index)
-            window.exam.examQuestions[index] = window.examinfo.questions[index].semantic;
-            window.exam.examQuestions[index].creditReceived = false;
-            window.exam.examQuestions[index].RightAnswer = trimP(window.exam.examQuestions[index].RightAnswer)
-            window.examinfo.questions[index].creditReceived = false;
-        });
+        if (window.exam.searchMethod === "Category") {
+            $.each(window.examinfo.questions, function(index, value) {
+                window.examinfo.questions.isParsed = 0;
+                $("#navPane").append("<div id='" + index + "' class='navPaneButton'> &bull;   " + (index - -1) + "</div>");
+                console.log(index)
+                window.exam.examQuestions[index] = window.examinfo.questions[index].semantic;
+                window.exam.examQuestions[index].creditReceived = false;
+                window.exam.examQuestions[index].RightAnswer = trimP(window.exam.examQuestions[index].RightAnswer)
+                window.examinfo.questions[index].creditReceived = false;
+            });
+        }else{
+             $.each(window.exam.examQuestions, function(index, value) {
+                $("#navPane").append("<div id='" + index + "' class='navPaneButton'> &bull;   " + (index - -1) + "</div>");
+                window.exam.examQuestions[index].RightAnswer = trimP(window.exam.examQuestions[index].RightAnswer)
+                window.exam.examQuestions[index].creditReceived = false;
+             })
+        }
     }
 
     $("#pauseButton").click(suspendExam);
@@ -1199,6 +1264,7 @@ function questionDisplay() {
         // }
 
         if (window.exam.examQuestions[window.exam.currentQuestion].creditReceived == false) {
+            console.log('Hey this')
             $("div.answer").click(answerClicked);
 
         }

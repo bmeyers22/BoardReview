@@ -556,7 +556,9 @@ border-right: 15px solid transparent;
 border-bottom: 20px solid white;
 }
 
-#wjgContainer { font-family:Arial, Helvetica, Sans-Serif; font-size:0.8em; height:80%;}
+#wjgContainer { font-family:Open Sans, sans-serif;
+font-weight: 400;
+height:80%;}
 
 #report { border-collapse:collapse;width:90%}
 #report h4 { margin:0px; padding:0px;}
