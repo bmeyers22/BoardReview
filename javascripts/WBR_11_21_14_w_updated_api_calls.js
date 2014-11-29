@@ -479,6 +479,62 @@ function selectExamOptions(event) {
     countCats()
 };
 
+function getQBankUsageInfo(callback) {
+    dfr = $.Deferred();
+    //Your code
+    
+
+
+    //API call for all questions goes here
+    var api = new mw.Api();
+    api.get({
+            action: 'questions',
+            questions: JSON.stringify({
+                filters: {
+                    ExamType: [window.exam.examtype],
+                    hasSeen: true
+                },
+                format: 'array',
+
+            }),
+            format: 'json'
+        })
+        .done(function(data) {
+            console.log(data);
+            var n_q_available = data.questions.length;
+            window.totalQBankQuestions=n_q_available;
+            if (window.unusedQBankQuestions!=null){
+                dfr.resolve();
+            }
+        });
+    //API call for unused questions goes here
+    var api = new mw.Api();
+    api.get({
+            action: 'questions',
+            questions: JSON.stringify({
+                filters: {
+                    ExamType: [window.exam.examtype],
+                    hasSeen: false
+                },
+                format: 'array',
+
+            }),
+            format: 'json'
+        })
+        .done(function(data) {
+            console.log(data);
+            var n_q_unused = data.questions.length;
+            window.unusedQBankQuestions=n_q_unused;
+            if (window.totalQBankQuestions!=null){
+                dfr.resolve();
+            }
+            
+            var x =dfr;
+
+        });
+    return dfr
+}
+
 function runPerformanceQuery() {
     var r = $.Deferred();
     var api = new mw.Api();
@@ -491,6 +547,8 @@ function runPerformanceQuery() {
     }).done(function(data) {
         console.log(data);
         $("#report tbody").html('');
+        var examScoreList=[];
+        var examDateList=[];
         $.each(data.exams, function(index, value) {
             var outstring = "";
             var timeBegin = "";
@@ -501,6 +559,14 @@ function runPerformanceQuery() {
             }
             if (value.end != null) {
                 timeEnd = new Date(value.end * 1000).toDateString();
+                timeEndNice=new Date(value.end * 1000).toLocaleDateString();
+                //Check that the score is valid
+                if (value.score>(-1) && value.score<101){
+                    examScoreList.push(value.score);
+                    console.log(examScoreList);
+                    examDateList.push(timeEndNice);
+                    console.log(examDateList);
+                }
                 scoreString = value.score + "%";
             } else {
                 timeEnd = "Unfinished";
@@ -550,7 +616,39 @@ function runPerformanceQuery() {
             }
 
         })
-        setTimeout(function() {
+
+
+
+        function finishPerformanceQuery(examDateList,examScoreList){
+            // Right now I'm not using this function - I wasn't sure of how to structure the callback to get it to run once the api call came back.
+            $("tr:odd").addClass("odd");
+            $("tr:not(.odd)").hide();
+            $("tr:first-child").show();
+             $("tr.odd").click(function() {
+                $(this).next("tr").toggle();
+                $(this).find(".arrow").toggleClass("up");
+            });
+            $('li>div.resumeClass').click(function() {
+                window.resumeExamID = this.id;
+                resumeExam();
+            })
+            $('li>div.deleteClass').click(function() {
+                window.deleteExamID = this.id;
+                deleteExam();
+            })
+            $('#wjgContainer').prepend('<canvas id="userQBankUsage" width="450" height="300"></canvas><canvas id="userPerformanceScores" width="450" height="300"></canvas>');
+            //var testScores = [53.4, 49.8, 61.8, 44.5, 47.8, 62.9, 68.7, 64.9, 65.0, 82.7, 77.9, 78.6, 80.1, 84.6];
+            //exp_vals = calc_exp_moving_average(testScores, 2 / 3);
+            exp_vals = calc_exp_moving_average(examScoreList, 2 / 3);
+            plotUserPerformanceOverTime(examDateList,examScoreList,exp_vals,'examScores');
+            getQBankUsageInfo(function (){
+                var unusedQBankQuestions=window.unusedQBankQuestions;
+                var totalQBankQuestions=window.totalQBankQuestions;
+                plotUserQBankUsage(unusedQBankQuestions,totalQBankQuestions,'userQBankUsage');
+            });
+
+        }
+       setTimeout(function() {
             // and call `resolve` on the deferred object, once you're done 
             r.resolve();
             $("tr.odd").click(function() {
@@ -565,15 +663,173 @@ function runPerformanceQuery() {
                 window.deleteExamID = this.id;
                 deleteExam();
             })
+            $('#wjgContainer').prepend('<canvas id="userPerformanceScores" width="450" height="300"></canvas><canvas id="userQBankUsage" width="450" height="300"></canvas>');
+            //var testScores = [53.4, 49.8, 61.8, 44.5, 47.8, 62.9, 68.7, 64.9, 65.0, 82.7, 77.9, 78.6, 80.1, 84.6];
+            //exp_vals = calc_exp_moving_average(testScores, 2 / 3);
+            exp_vals = calc_exp_moving_average(examScoreList, 2 / 3);
+            plotUserPerformanceOverTime(examDateList,examScoreList,exp_vals,'examScores');
+            $.when( getQBankUsageInfo() ).done(function() {
+                var unusedQBankQuestions=window.unusedQBankQuestions;
+                var totalQBankQuestions=window.totalQBankQuestions;
+                console.log('Here is a string' + unusedQBankQuestions + ' / ' + totalQBankQuestions);
+                plotUserQBankUsage(unusedQBankQuestions,totalQBankQuestions,'userQBankUsage');
 
-
-        }, 2500);
+            });
+/*            getQBankUsageInfo(function (){
+                 var unusedQBankQuestions=window.unusedQBankQuestions;
+                var totalQBankQuestions=window.totalQBankQuestions;
+                console.log('Here is a string' + unusedQBankQuestions + ' / ' + totalQBankQuestions);
+                plotUserQBankUsage(unusedQBankQuestions,totalQBankQuestions,'userQBankUsage');
+            });*/
+        }, 100);
         return r
         $("tr:odd").addClass("odd");
         $("tr:not(.odd)").hide();
         $("tr:first-child").show();
 
     });
+}
+
+function calc_exp_moving_average(values, half_life) {
+        var exp_avg_vals = new Array(values.length); //Initialize new array in which we'll put our calculated values
+        for (var i = values.length; i > (-1); i = i - 1) {
+            exp_weights = [];
+            for (var j = 0; j < i; j += 1) {
+                var weight = Math.pow(half_life, i - j - 1);
+                exp_weights[j] = weight;
+            }; //Ends the calculation of the exponential weights for each timepoint.
+            var score_sum = 0;
+            var subvalues = values.slice(0, i + 1);
+            var exp_weight_sum = 0;
+            for (var i = 0; i < exp_weights.length; i++) {
+                score_sum += exp_weights[i] * subvalues[i];
+                exp_weight_sum += exp_weights[i];
+            } //Ends the multiplication of the weights by the scores.
+
+            var average_score = score_sum / exp_weight_sum;
+            if (i == 0) {
+                average_score = values[i];
+            }
+            exp_avg_vals[i] = average_score;
+        } //Ends the iteration through values.length
+        return exp_avg_vals.slice(1, exp_avg_vals.length + 1);
+    } //Ends the function
+
+
+function plotUserQBankUsage(unusedQBankQuestions,totalQBankQuestions,canvasName){
+    console.log('Entering plotUserQBankUsage')
+        unusedPercent=100*unusedQBankQuestions/totalQBankQuestions;
+        usedPercent=100-unusedPercent;
+        // pie chart data
+    var pieData = [{
+        value: Math.round(usedPercent),
+        color: "#FFC946",
+        title:'Used',
+    }, {
+        value: Math.round(unusedPercent),
+        color: "#3C9AD6",
+        title: 'Unused',
+    }];
+    // pie chart options
+    var pieOptions = {
+            segmentShowStroke: false,
+            animateScale: true,
+
+            legend: true,
+            legendFontFamily: "'Open Sans'",
+            legendFontSize: 12,
+            legendFontStyle: "normal",
+            legendFontColor: "#666",
+            legendBlockSize: 15,
+            legendBorders: false,
+            legendBordersColor: "#666",
+
+            graphTitle: "Percent Complete",
+            graphTitleFontFamily: "'Open Sans'",
+            graphTitleFontSize: 24,
+            graphTitleFontStyle: "normal",
+            graphTitleFontColor: "#666",
+        }
+
+    var newopts = {
+        yAxisLabel: "Percent Correct",
+        yAxisFontFamily: "'Arial'",
+        yAxisFontSize: 16,
+        yAxisFontStyle: "normal",
+        yAxisFontColor: "#666",
+
+        legend: true,
+        legendFontFamily: "'Arial'",
+        legendFontSize: 12,
+        legendFontStyle: "normal",
+        legendFontColor: "#666",
+        legendBlockSize: 15,
+        legendBorders: false,
+        legendBordersColor: "#666",
+
+
+        graphTitle: "My Performance",
+        graphTitleFontFamily: "'Arial'",
+        graphTitleFontSize: 24,
+        graphTitleFontStyle: "bold",
+        graphTitleFontColor: "#666",
+    }
+    // get pie chart canvas
+    var QBankUsage = document.getElementById("userQBankUsage").getContext("2d");
+    new Chart(QBankUsage).Pie(pieData, pieOptions);// draw pie chart
+
+    //console.log('Hi');
+}
+
+function plotUserPerformanceOverTime(testDates, testScores, expAvgScores ,canvasName) {
+    console.log('Hi');
+    var performanceData = {
+        //labels: ["January 12", "January 22", "February 6", "February 15", "February 26", "March 3", "March 11", "March 20", "March 30", "April 4", "April 8", "April 12", "April 15", "April 22"],
+        labels: testDates,
+        datasets: [{
+            fillColor: "rgba(220,220,220,0.5)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            data: testScores,
+            title: "Individual tests"
+        }, {
+            fillColor: "rgba(151,187,205,0.5)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            data: expAvgScores,
+            title: "Moving average"
+        }]
+    }
+    var newopts = {
+            yAxisLabel: "Percent Correct",
+            yAxisFontFamily: "'Open Sans'",
+            yAxisFontSize: 16,
+            yAxisFontStyle: "normal",
+            yAxisFontColor: "#666",
+
+            legend: true,
+            legendFontFamily: "'Open Sans'",
+            legendFontSize: 12,
+            legendFontStyle: "normal",
+            legendFontColor: "#666",
+            legendBlockSize: 15,
+            legendBorders: false,
+            legendBordersColor: "#666",
+
+
+            graphTitle: "My Performance",
+            graphTitleFontFamily: "'Open Sans'",
+            graphTitleFontSize: 24,
+            graphTitleFontStyle: "normal",
+            graphTitleFontColor: "#666",
+        }
+        // get line chart canvas
+    var performance = document.getElementById('userPerformanceScores').getContext('2d');
+    // draw line chart
+    new Chart(performance).Line(performanceData, newopts);
+
 }
 
 function categoryOrKeyword(event) {
@@ -855,6 +1111,7 @@ function selectExamLength(event) {
                 format: 'json'
             })
             .done(function(data) {
+                window.QBankInfo=data;
                 console.log(data);
                 var n_q_available = data.questions.length;
                 if (n_q_available > 46) {
@@ -1460,7 +1717,7 @@ function answerClicked(event) {
     }
 }
 
-function getRating(page, exam) {
+function getRating2(page, exam) {
     //BRIANCALL2
     var api = new mw.Api();
     api.get({
@@ -1500,8 +1757,26 @@ function getRating(page, exam) {
     });
 }
 
-function getRating2(page, exam) {
+//We will extend the Math prototype to allow us to calculate means nicely.
+function returnMean(elmt){
+    var sum = 0;
+    for( var i = 0; i < elmt.length; i++ ){
+        sum += parseInt( elmt[i], 10 ); //don't forget to add the base
+    }
+
+    var avg = sum/elmt.length;
+    return avg
+    }
+
+function getRating(page, exam) {
     //BRIANCALL2
+    function stringArraytoIntArray(stringArray){
+        for (var i = 0; i < stringArray.length; i++) {
+            stringArray[i] = parseInt(stringArray[i], 10);
+        }
+        return stringArray
+    }
+
     var api = new mw.Api();
     api.get({
         action: 'ratings',
@@ -1511,48 +1786,60 @@ function getRating2(page, exam) {
         format: 'json',
     }, {
         ok: function(res) {
+            window.tempRatings=res;
             console.log(res);
-        }
-    });
-
-
-    var api = new mw.Api();
-    api.get({
-        action: 'ratings',
-        id: 'WBR0098',
-        question: page,
-        format: 'json'
-    }, {
-        ok: function(res) {
+            //let's throw an if statement in there to make sure that the ratings exist.
+            // Now we want to go through the results
+            if (res.ratings.length>0){
+                var groupedRatings=_.groupBy(res.ratings, 'type');
+                var groupedRatings=_.groupBy(tempRatings.ratings, 'type');
+                var difficultyArray = _.pluck(groupedRatings.difficulty,'value')
+                var difficultyArray = stringArraytoIntArray(difficultyArray);
+                var difficultyMean=returnMean(difficultyArray);
+                var yieldArray = _.pluck(groupedRatings.yield,'value')
+                var yieldArray = stringArraytoIntArray(yieldArray);
+                var yieldMean=returnMean(yieldArray);
+                var qualityArray = _.pluck(groupedRatings.quality,'value')
+                var qualityArray = stringArraytoIntArray(qualityArray);
+                var qualityMean=returnMean(qualityArray);
+            }else{
+                var difficultyMean=null;
+                var difficultyArray=[];
+                var yieldMean=null;
+                var yieldArray=[];
+                var qualityMean=null;
+                var qualityArray=[];
+            }
             $("#star1").raty({
                 path: 'http://www.wikidoc.org/includes/raty/img/',
                 click: function(score, event) {
                     submitRating("difficulty", score, exam.examQuestions[exam.currentQuestion].PageName)
                 },
-                score: res.wbrgetrating.difficulty,
+                score: difficultyMean,
                 hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
             });
-            $("#star1").append("(Avg: " + res.wbrgetrating.difficulty + ", n=" + res.wbrgetrating.diffCount + ")");
+            $("#star1").append("(Avg: " + difficultyMean + ", n=" + difficultyArray.length + ")");
             $("#star2").raty({
                 path: 'http://www.wikidoc.org/includes/raty/img/',
                 click: function(score, event) {
                     submitRating("yield", score, exam.examQuestions[exam.currentQuestion].PageName)
                 },
-                score: res.wbrgetrating.yield,
+                score: yieldMean,
                 hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
             });
-            $("#star2").append("(Avg: " + res.wbrgetrating.yield+", n=" + res.wbrgetrating.qualCount + ")");
+            $("#star2").append("(Avg: " + yieldMean + ", n=" + yieldArray.length + ")");
             $("#star3").raty({
                 path: 'http://www.wikidoc.org/includes/raty/img/',
                 click: function(score, event) {
                     submitRating("quality", score, exam.examQuestions[exam.currentQuestion].PageName)
                 },
-                score: res.wbrgetrating.quality,
+                score: qualityMean,
                 hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
             });
-            $("#star3").append("(Avg: " + res.wbrgetrating.quality + ", n=" + res.wbrgetrating.yieldSum + ")");
+            $("#star3").append("(Avg: " + qualityMean + ", n=" + qualityArray.length + ")");
         }
     });
+
 }
 
 
@@ -1737,32 +2024,6 @@ function endExam(event) {
         });
 
 
-    //  var api = new mw.Api();
-
-    //  api.get({
-    //    action : 'exams',
-    //    subaction: 'save',
-    //    id : window.exam.examid,
-    //    userName:
-    //    score : percent,
-    //    format : 'json'
-    //  })
-    //  .done(function (data) {
-    //    console.log('API result:', data);
-    //  });
-
-    // // Here's the old API call
-    //  var api = new mw.Api();
-
-    //  api.get({
-    //    action : 'endExam',
-    //    id : window.exam.examid,
-    //    score : percent,
-    //    format : 'json'
-    //  })
-    //  .done(function (data) {
-    //    console.log('API result:', data);
-    //  });
 
     $("#examSpace").append(datas);
     //$(".navPaneButton").unbind('click');
@@ -1818,43 +2079,6 @@ function endExam(event) {
 
 
 function submitRating(ratingType, score, page) {
-    if (ratingType === "difficulty") {
-        var api = new mw.Api();
-        api.get({
-            action: 'wbrinsertrating',
-            username: window.userName,
-            question: page,
-            difficulty: score,
-            format: 'json'
-        }, {
-            ok: function(res) {}
-        });
-    } else if (ratingType === "yield") {
-        var api = new mw.Api();
-        api.get({
-            action: 'wbrinsertrating',
-            username: window.userName,
-            question: page,
-            yield: score,
-            format: 'json'
-        }, {
-            ok: function(res) {}
-        });
-    } else if (ratingType === "quality") {
-        var api = new mw.Api();
-        api.get({
-            action: 'wbrinsertrating',
-            username: window.userName,
-            question: page,
-            quality: score,
-            format: 'json'
-        }, {
-            ok: function(res) {}
-        });
-    }
-}
-
-function submitRating2(ratingType, score, page) {
     //Type HERE
     if (ratingType === "difficulty") {
         var api = new mw.Api();
@@ -1876,24 +2100,36 @@ function submitRating2(ratingType, score, page) {
     } else if (ratingType === "yield") {
         var api = new mw.Api();
         api.get({
-            action: 'wbrinsertrating',
-            username: window.userName,
-            question: page,
-            yield: score,
+            action: 'ratings',
+            subAction: 'save',
+            ratings: JSON.stringify([{
+                username: window.userName,
+                question: window.exam.examQuestions[window.exam.currentQuestion].title,
+                type: "yield",
+                value: score,
+            }]),
             format: 'json'
         }, {
-            ok: function(res) {}
+            ok: function(res) {
+                console.log(res)
+            }
         });
     } else if (ratingType === "quality") {
         var api = new mw.Api();
         api.get({
-            action: 'wbrinsertrating',
-            username: window.userName,
-            question: page,
-            quality: score,
+            action: 'ratings',
+            subAction: 'save',
+            ratings: JSON.stringify([{
+                username: window.userName,
+                question: window.exam.examQuestions[window.exam.currentQuestion].title,
+                type: "quality",
+                value: score,
+            }]),
             format: 'json'
         }, {
-            ok: function(res) {}
+            ok: function(res) {
+                console.log(res)
+            }
         });
     }
 }
