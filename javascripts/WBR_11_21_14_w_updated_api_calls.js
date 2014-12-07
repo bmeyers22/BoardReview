@@ -438,7 +438,13 @@ function selectExamOptions(event) {
         }
         window.exam.hasSeen = value;
     });
-
+    // We set the initial qualityMin and qualityMax, etc here
+    window.qualityMin=1;
+    window.qualityMax=5;
+    window.difficultyMin=1;
+    window.difficultyMax=5;
+    window.yieldMin=1;
+    window.yieldMax=5;    
     $("#slider-range-quality").slider({
         range: true,
         min: 1,
@@ -447,6 +453,8 @@ function selectExamOptions(event) {
         step: 0.1,
         slide: function(event, ui) {
             $("#quality").val(ui.values[0] + " - " + ui.values[1]);
+            window.qualityMin=ui.values[0];
+            window.qualityMax=ui.values[1];
         }
     });
     $("#quality").val($("#slider-range-quality").slider("values", 0) + " - " + $("#slider-range-quality").slider("values", 1));
@@ -459,6 +467,8 @@ function selectExamOptions(event) {
         step: 0.1,
         slide: function(event, ui) {
             $("#yield").val(ui.values[0] + " - " + ui.values[1]);
+            window.yieldMin=ui.values[0];
+            window.yieldMax=ui.values[1];
         }
     });
     $("#yield").val($("#slider-range-yield").slider("values", 0) + " - " + $("#slider-range-yield").slider("values", 1));
@@ -471,6 +481,8 @@ function selectExamOptions(event) {
         step: 0.1,
         slide: function(event, ui) {
             $("#difficulty").val(ui.values[0] + " - " + ui.values[1]);
+            window.difficultyMin=ui.values[0];
+            window.difficultyMax=ui.values[1];
         }
     });
     $("#difficulty").val($("#slider-range-difficulty").slider("values", 0) + " - " + $("#slider-range-difficulty").slider("values", 1));
@@ -478,6 +490,17 @@ function selectExamOptions(event) {
 
     countCats()
 };
+
+function checkForRatingFilter(event){
+    if (window.difficultyMin==1 & window.difficultyMax==5 & window.qualityMin==1 & window.qualityMax==5 & window.yieldMin==1 & window.yieldMax==5){
+        var useRatings = false;
+    }else{
+        var useRatings=true;
+    }
+
+    return useRatings
+}
+
 
 function getQBankUsageInfo(callback) {
     dfr = $.Deferred();
@@ -1225,7 +1248,30 @@ function inputValidation(event) {
         } else {
             window.exam.tutorMode = 0
         }
-        //CALL1
+        //CALL if no filtering is being done
+        var useRatings=checkForRatingFilter()
+        if(useRatings){
+            var questionsObject={
+                        MainCategory: window.exam.mainCat,
+                        SubCategory: window.exam.subCat,
+                        ExamType: window.exam.examtype,
+                        count: window.exam.numQuestion,
+                        hasSeen: window.exam.hasSeen,
+                        rating: {
+                            yield:[window.yieldMin,window.yieldMax],
+                            difficulty:[window.difficultyMin,window.difficultyMax],
+                            quality:[window.qualityMin,window.qualityMax],
+                        },
+                    }
+        }else{
+            var questionsObject={
+                        MainCategory: window.exam.mainCat,
+                        SubCategory: window.exam.subCat,
+                        ExamType: window.exam.examtype,
+                        count: window.exam.numQuestion,
+                        hasSeen: window.exam.hasSeen,
+                    }
+        }
         var api = new mw.Api();
         api.get({
                 action: 'exams',
@@ -1235,12 +1281,7 @@ function inputValidation(event) {
                     type: window.exam.examtype,
                     timer_length: window.exam.timeAmt,
                     tutorMode: window.exam.tutorMode,
-                    questions: {
-                        MainCategory: window.exam.mainCat,
-                        SubCategory: window.exam.subCat,
-                        ExamType: window.exam.examtype,
-                        count: window.exam.numQuestion,
-                    },
+                    questions: questionsObject,
                 }),
                 format: 'json'
             })
@@ -1750,7 +1791,7 @@ function getRating2(page, exam) {
                     submitRating("quality", score, exam.examQuestions[exam.currentQuestion].PageName)
                 },
                 score: res.wbrgetrating.quality,
-                hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
+                hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Multi-step reasoning, clear and clever. Explanation is thorough and insightful. This is an exceptional question. May have a custom illustration']
             });
             $("#star3").append("(Avg: " + res.wbrgetrating.quality + ", n=" + res.wbrgetrating.yieldSum + ")");
         }
@@ -1834,7 +1875,7 @@ function getRating(page, exam) {
                     submitRating("quality", score, exam.examQuestions[exam.currentQuestion].PageName)
                 },
                 score: qualityMean,
-                hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Very Good']
+                hints: ['Very Poor', 'Poor', 'Average', 'Good', 'Multi-step reasoning, clear and clever. Explanation is thorough and insightful. This is an exceptional question. May have a custom illustration']
             });
             $("#star3").append("(Avg: " + qualityMean + ", n=" + qualityArray.length + ")");
         }
